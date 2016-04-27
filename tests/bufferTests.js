@@ -8,10 +8,13 @@ var CLBuffer = nooocl.CLBuffer;
 var CLCommandQueue = nooocl.CLCommandQueue;
 var ref = require("ref");
 var testHelpers = require("./testHelpers");
+// debugger;
 
 describe("CLBuffer", function () {
     it("can copy contents of two node.js buffer through OpenCL", function (done) {
+
         testHelpers.doTest(function (env) {
+          debugger;
             var host = env.host;
             var context = env.context;
             var device = env.device;
@@ -33,8 +36,10 @@ describe("CLBuffer", function () {
                     assert.equal(destBuffer[2], 0);
                     assert.equal(destBuffer[3], 0);
                     assert.equal(destBuffer[4], 0);
+
                     return queue.enqueueReadBuffer(dstCLBuffer, 0, srcBuffer.length, destBuffer).promise
                         .then(function () {
+                          debugger;
                             assert.equal(destBuffer[0], 11);
                             assert.equal(destBuffer[1], 12);
                             assert.equal(destBuffer[2], 13);

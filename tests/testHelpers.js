@@ -22,16 +22,16 @@ var testHelpers = {
             var host = new CLHost(version);
             var cpuEnv = testHelpers.createEnvironment(host, "cpu");
             var cpuTestResult = cpuEnv ? testMethod(cpuEnv) : Bluebird.resolve();
-            var gpuEnv = testHelpers.createEnvironment(host, "gpu");
-            if (gpuEnv) {
-                return cpuTestResult.then(function () {
-                    return testMethod(gpuEnv);
-                });
-            }
-            if (!gpuWarn) {
-                console.warn("GPU is not available!");
-                gpuWarn = true;
-            }
+            // var gpuEnv = testHelpers.createEnvironment(host, "gpu");
+            // if (gpuEnv) {
+            //     return cpuTestResult.then(function () {
+            //         return testMethod(gpuEnv);
+            //     });
+            // }
+            // if (!gpuWarn) {
+            //     console.warn("GPU is not available!");
+            //     gpuWarn = true;
+            // }
             return cpuTestResult;
         });
     },

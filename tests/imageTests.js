@@ -21,7 +21,8 @@ describe("CLImage2D", function () {
             var host = env.host;
             var context = env.context;
             var device = env.device;
-            return fs.readFileAsync(path.join(cd, "elefant.jpg")).then(function (data) {
+            debugger;
+            return fs.readFileAsync(__dirname + "/elefant.jpg").then(function (data) {
                 var inputImage = jpeg.decode(data);
                 var queue = new CLCommandQueue(context, device);
                 var format = new (host.cl.types.ImageFormat)({
@@ -31,7 +32,8 @@ describe("CLImage2D", function () {
                 var src = CLImage2D.wrapReadOnly(context, format, inputImage.width, inputImage.height, inputImage.data);
                 var outputData = new Buffer(inputImage.data.length);
                 var dst = CLImage2D.wrapWriteOnly(context, format, inputImage.width, inputImage.height, outputData);
-                return fs.readFileAsync(path.join(cd, "toGray.cl"), "utf8").then(
+                debugger;
+                return fs.readFileAsync(__dirname + "/toGray.cl", "utf8").then(
                     function (source) {
                         var program = context.createProgram(source);
                         return program.build().then(function () {
@@ -44,9 +46,13 @@ describe("CLImage2D", function () {
                             queue.enqueueNDRangeKernel(kernel, new NDRange(inputImage.width, inputImage.height), null, null);
                             var out = {};
                             var origin = new NDRange(0, 0, 0);
+                            debugger;
                             var region = new NDRange(inputImage.width, inputImage.height, 1);
+                            
                             return queue.waitable().enqueueMapImage(dst, host.cl.defs.CL_MAP_READ, origin, region, out).promise
                                 .then(function () {
+                                    console.log('finding nemo in the stack 1 : ' + origin);
+
                                     assert(out.ptr ? true : false);
                                     assert.equal(out.rowPitch, inputImage.width * 4);
                                     assert.equal(ref.address(out.ptr), ref.address(outputData));
@@ -59,7 +65,7 @@ describe("CLImage2D", function () {
 
                                     var jpegData = jpeg.encode(outputImage, 85);
 
-                                    return fs.writeFileAsync(path.join(cd, "out.jpg"), jpegData.data, "binary").finally(
+                                    return fs.writeFileAsync(__dirname + "/out.jpg", jpegData.data, "binary").finally(
                                         function () {
                                             return queue.waitable().enqueueUnmapMemory(dst, out.ptr).promise;
                                         });
@@ -70,4 +76,3 @@ describe("CLImage2D", function () {
         }).nodeify(done);
     });
 });
-
